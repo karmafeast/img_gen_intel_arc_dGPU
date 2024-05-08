@@ -20,6 +20,7 @@ services:
     devices:
       - /dev/dxg
       - /dev/dri
+    tty: true
     environment:
       - DEBIAN_FRONTEND=noninteractive
       - LD_LIBRARY_PATH=/oneapi-lib:/oneapi-lib/intel64:$LD_LIBRARY_PATH

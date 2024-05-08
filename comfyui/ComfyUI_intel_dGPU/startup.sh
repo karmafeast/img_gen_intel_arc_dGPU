@@ -52,7 +52,7 @@ if [ "$FirstLaunch" = "true" ]; then
     # install extra models if docker-compose COMFYUI_MODELS_DOWNLOAD=1
     if [ "$COMFYUI_MODELS_DOWNLOAD" = "1" ]; then
         echo "|__> Downloading extra models for ComfyUI. this may take some time..."
-        python3 /ComfyUI/download_models.py
+        python3 /scripts/get_models.py
     fi
 fi
 

@@ -90,7 +90,7 @@ COPY requirements-comfy.txt /requirements-comfy.txt
 RUN mkdir /scripts && chmod 755 /scripts
 COPY get_models.py /scripts/get_models.py
 
-RUN COPY extra_model_paths.yaml /extra_model_paths.yaml
+COPY extra_model_paths.yaml /extra_model_paths.yaml
 
 # Setup location of Python virtual environment and make sure LD_PRELOAD contains the path of the allocator chosen.
 ENV VENVDir=/deps/venv
