@@ -6,17 +6,20 @@ import os
 from typing import Final
 
 COMFYUI_BASEDIR: Final[str] = "/ComfyUI"
+COMFYUI_VENV: Final[str] = "/deps/venv"
 MODELS_BASEDIR: Final[str] = "/models"
-WGET_ARGS: Final[str] = "-c --no-verbose --progress=bar:force:noscroll --show-progress"
+
+WGET_ARGS: Final[str] = "-c --no-verbose --show-progress"
 
 # SDXL
 print("__> Downloading models...")
 print(f"___> COMFYUI_BASEDIR = {MODELS_BASEDIR}/")
+print(f"___> COMFYUI_VENV = {COMFYUI_VENV}/")
 print(f"___> MODELS_BASEDIR = {MODELS_BASEDIR}/")
 
 # (custom nodes) ControlNet Preprocessor nodes by Fannovel16
 print(f"____> ({COMFYUI_BASEDIR}/custom_nodes/) ==>   ControlNet Preprocessor nodes custom_nodes...")
-os.system(f"cd {COMFYUI_BASEDIR}/custom_nodes && git clone https://github.com/Fannovel16/comfy_controlnet_preprocessors; cd comfy_controlnet_preprocessors && python3 install.py")
+os.system(f"source {COMFYUI_VENV}/bin/activate && cd {COMFYUI_BASEDIR}/custom_nodes && git clone https://github.com/Fannovel16/comfy_controlnet_preprocessors; cd comfy_controlnet_preprocessors && python3 install.py")
 
 print(f"____> ({MODELS_BASEDIR}/checkpoints/) ==>   SDXL...")
 os.system(f"wget {WGET_ARGS} https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors -P {MODELS_BASEDIR}/checkpoints/")
