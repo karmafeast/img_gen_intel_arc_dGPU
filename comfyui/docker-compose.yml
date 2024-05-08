@@ -24,6 +24,8 @@ services:
       - DEBIAN_FRONTEND=noninteractive
       - LD_LIBRARY_PATH=/oneapi-lib:/oneapi-lib/intel64:$LD_LIBRARY_PATH
       - VENVDir=/deps/venv
+      - INIT_TOUCH_FILE=/deps/touchme.comfyinit
+      - COMFYUI_MODELS_DOWNLOAD=1
       - LD_PRELOAD=${ALLOCATOR_LD_PRELOAD}
       - NEOReadDebugKeys=1
       - ClDeviceGlobalMemSizeAvailablePercent=100

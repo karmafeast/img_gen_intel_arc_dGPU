@@ -1,0 +1,51 @@
+---
+#Define extra_model_paths here. lives in the root of the comfyui folder
+
+comfyui:
+  base_path: /ComfyUI
+  checkpoints: /models/checkpoints/
+  clip: /models/clip/
+  clip_vision: /models/clip_vision/
+  configs: /models/configs/
+  controlnet: /models/controlnet/
+  diffusers: /models/diffusers/
+  embeddings: /models/embeddings/
+  gligen: /models/gligen/
+  hypernetworks: /models/hypernetworks/
+  loras: /models/loras/
+  photomaker: /models/photomaker/
+  style_models: /models/style_models/
+  unet: /models/unet/
+  upscale_models: /models/upscale_models/
+  vae: /models/vae/
+  vae_approx: /models/vae_approx/
+
+# additional below from comfyui/extra_model_paths.yaml.example
+
+#config for a1111 ui
+#all you have to do is change the base_path to where yours is installed
+# a111:
+#     base_path: path/to/stable-diffusion-webui/
+
+#     checkpoints: models/Stable-diffusion
+#     configs: models/Stable-diffusion
+#     vae: models/VAE
+#     loras: |
+#          models/Lora
+#          models/LyCORIS
+#     upscale_models: |
+#                   models/ESRGAN
+#                   models/RealESRGAN
+#                   models/SwinIR
+#     embeddings: embeddings
+#     hypernetworks: models/hypernetworks
+#     controlnet: models/ControlNet
+
+#config for comfyui
+#your base path should be either an existing comfy install or a central folder where you store all of your models, loras, etc.
+
+#other_ui:
+#    base_path: path/to/ui
+#    checkpoints: models/checkpoints
+#    gligen: models/gligen
+#    custom_nodes: path/custom_nodes

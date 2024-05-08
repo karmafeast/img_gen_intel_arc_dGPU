@@ -5,7 +5,6 @@ ARG UBUNTU_VERSION=22.04
 FROM intel/intel-extension-for-pytorch:2.1.30-xpu
 
 # Install prerequisites to install oneAPI runtime libraries.
-# hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
     ca-certificates \
@@ -22,60 +21,15 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# hadolint ignore=DL4006
-#RUN no_proxy=$no_proxy wget --progress=dot:giga -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
-#    | gpg --dearmor | tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null && \
-#    echo 'deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main' \
-#    | tee /etc/apt/sources.list.d/oneAPI.list
-
 # Define and install oneAPI runtime libraries for less space.
 ARG DPCPP_VER=2024.1.0-963
 ARG MKL_VER=2024.1.0-691
 ARG CMPLR_COMMON_VER=2024.1
-# intel-oneapi-compiler-shared-common provides `sycl-ls`
-# these added below!
-# intel-oneapi-dpcpp-cpp-2024.1=2024.1.0-963 \
-# intel-oneapi-mkl-devel=2024.1.0-691 \
-# intel-oneapi-ccl-devel=2021.12.0-309 \
-#RUN apt-get update && \
-#    apt-get install -y --no-install-recommends --fix-missing \
-#    intel-oneapi-dpcpp-cpp-2024.1=2024.1.0-963 \
-#    intel-oneapi-mkl-devel=2024.1.0-691 \
-#    intel-oneapi-ccl-devel=2021.12.0-309 \
-#    intel-oneapi-runtime-dpcpp-cpp=${DPCPP_VER} \
-#    intel-oneapi-runtime-mkl=${MKL_VER} \
-#    intel-oneapi-compiler-shared-common-${CMPLR_COMMON_VER}=${DPCPP_VER} &&\
-#    apt-get clean && \
-#    rm -rf /var/lib/apt/lists/*
-
-# Add and prepare Intel Graphics driver index. This is dependent on being able to pass your GPU with a working driver on the host side where the image will run.
-#ARG DEVICE=arc
-# hadolint ignore=DL4006
-#RUN no_proxy=$no_proxy wget --progress=dot:giga -qO - https://repositories.intel.com/graphics/intel-graphics.key | \
-#    gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg
-# hadolint ignore=DL4006
-#RUN printf 'deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu jammy %s\n' "${DEVICE}" | \
-#tee /etc/apt/sources.list.d/intel.gpu.jammy.list
-
-#ARG UBUNTU_VERSION=22.04
-#FROM ubuntu:${UBUNTU_VERSION}
-
-# Copy all the files from the oneAPI runtime libraries image into the actual final image.
-#RUN mkdir -p /oneapi-lib
-#COPY --from=oneapi-lib-installer /opt/intel/oneapi/redist/lib/ /oneapi-lib/
-#ARG CMPLR_COMMON_VER=2024.1
-#COPY --from=oneapi-lib-installer /opt/intel/oneapi/compiler/${CMPLR_COMMON_VER}/bin/sycl-ls /bin/
-#COPY --from=oneapi-lib-installer /usr/share/keyrings/intel-graphics.gpg /usr/share/keyrings/intel-graphics.gpg
-#COPY --from=oneapi-lib-installer /etc/apt/sources.list.d/intel.gpu.jammy.list /etc/apt/sources.list.d/intel.gpu.jammy.list
 
 # Set apt install to not be interactive for things like tzdata
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Set oneAPI library environment variable
-#ENV LD_LIBRARY_PATH=/oneapi-lib:/oneapi-lib/intel64:$LD_LIBRARY_PATH
-
 # Install certificate authorities to get access to secure connections to other places for downloads.
-# hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
     ca-certificates \
@@ -89,7 +43,6 @@ RUN apt-get update && \
 
 # Install Python and other associated packages from PPA since default is 3.10
 ARG PYTHON=python3.11
-# hadolint ignore=DL3008
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
@@ -97,12 +50,10 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     lib${PYTHON} \
     python3-pip \
     ${PYTHON}-venv && \
-    #python3-venv && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Update pip
-# hadolint ignore=DL3013
 RUN pip --no-cache-dir install --upgrade \
     pip \
     setuptools
@@ -114,31 +65,9 @@ RUN ln -sf "$(which ${PYTHON})" /usr/local/bin/python && \
     ln -sf "$(which ${PYTHON})" /usr/bin/python3
 
 # Sets versions of Level-Zero, OpenCL and memory allocator chosen.
-#ARG ICD_VER=23.17.26241.33-647~22.04
-#ARG LEVEL_ZERO_GPU_VER=1.3.26241.33-647~22.04
-#ARG LEVEL_ZERO_VER=1.11.0-647~22.04
-#ARG LEVEL_ZERO_DEV_VER=1.11.0-647~22.04
-#ARG ALLOCATOR=tcmalloc
-#ENV ALLOCATOR=${ALLOCATOR}
-#ARG ALLOCATOR_PACKAGE=libgoogle-perftools-dev
 ARG ALLOCATOR_LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so
-#RUN if [ "${ALLOCATOR}" = "jemalloc" ] ; then \
-#    ALLOCATOR_PACKAGE=libjemalloc-dev; \
-#    ALLOCATOR_LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so; \
-#    fi
-
-# Install Level-Zero and OpenCL backends.
-#RUN apt-get update && \
-#    apt-get install -y --no-install-recommends --fix-missing \
-#    intel-opencl-icd=${ICD_VER} \
-#    intel-level-zero-gpu=${LEVEL_ZERO_GPU_VER} \
-#    level-zero=${LEVEL_ZERO_VER} \
-#    level-zero-dev=${LEVEL_ZERO_DEV_VER} && \
-#    apt-get clean && \
-#    rm -rf  /var/lib/apt/lists/*
 
 # Install Comfy UI/Pytorch dependencies.
-# hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
     ${ALLOCATOR_PACKAGE} \
@@ -158,12 +87,10 @@ RUN chmod 755 /bin/startup.sh
 COPY requirements-ipex.txt /requirements-ipex.txt
 COPY requirements-comfy.txt /requirements-comfy.txt
 
-# Volumes that can be used by the image when making containers.
-# volumes in compose
-#VOLUME [ "/deps" ]
-#VOLUME [ "/ComfyUI" ]
-#VOLUME [ "/models" ]
-#VOLUME [ "/root/.cache/huggingfacetest" ]
+RUN mkdir /scripts && chmod 755 /scripts
+COPY get_models.py /scripts/get_models.py
+
+RUN COPY extra_model_paths.yaml /extra_model_paths.yaml
 
 # Setup location of Python virtual environment and make sure LD_PRELOAD contains the path of the allocator chosen.
 ENV VENVDir=/deps/venv

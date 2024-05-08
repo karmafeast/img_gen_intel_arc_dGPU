@@ -1,5 +1,5 @@
 #!/bin/sh
-CONTAINER_ALREADY_STARTED=/tmp/CONTAINER_ALREADY_STARTED_PLACEHOLDER
+CONTAINER_ALREADY_STARTED=$INIT_TOUCH_FILE
 # Setup Python virtual environment if we don't see anything there as in a first launch run or if the repository does not exist.
 
 # debug below
@@ -21,6 +21,12 @@ if [ ! -e $CONTAINER_ALREADY_STARTED ]; then
     echo "|____> copying comfyui-manager to /ComfyUI/custom_nodes."
     cp -r /tmp/ComfyUI-Manager /ComfyUI/custom_nodes
     git config core.filemode false
+
+    # place extra_model_paths.yaml
+    echo "|____> placing extra_model_paths.yaml in /ComfyUI."
+    cp /extra_model_paths.yaml /ComfyUI/extra_model_paths.yaml
+
+    # Set the first launch variable to true.
     FirstLaunch=true
     # Make a file in /tmp/ to indicate the first launch step has been executed.
     echo "|____> First launch var set to true, touching ${CONTAINER_ALREADY_STARTED}"
@@ -40,11 +46,14 @@ fi
 # Install pip requirements if launching for the first time.
 if [ "$FirstLaunch" = "true" ]; then
     echo "|__> Installing ComfyUI Python dependencies - note this is for xpu, as opposed to internal on-CPU-GPU."
-    #python -m pip install torch~=2.1.0.post0 torchvision==0.16.0.post0 torchaudio==2.1.0.post0 intel-extension-for-pytorch==2.1.20+xpu --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
-    #python -m pip install torch==2.2.* torchvision torchaudio intel-extension-for-pytorch==2.2.* --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
-    #pip install *.whl
     pip install -r /requirements-ipex.txt --upgrade
     pip install -r /requirements-comfy.txt
+
+    # install extra models if docker-compose COMFYUI_MODELS_DOWNLOAD=1
+    if [ "$COMFYUI_MODELS_DOWNLOAD" = "1" ]; then
+        echo "|__> Downloading extra models for ComfyUI. this may take some time..."
+        python3 /ComfyUI/download_models.py
+    fi
 fi
 
 # Launch ComfyUI based on whether ipexrun is set to be used or not. Explicit string splitting is done by the shell here so shellcheck warning is ignored.
