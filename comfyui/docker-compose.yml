@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  comfyui_launcher:
+    privileged: true
+    build: ./ComfyUI_intel_dGPU
+    image: comfyui-intel-arc:1.0
+    container_name: comfyui-intel-arc
+    networks:
+      - ai-front
+    ports:
+      - "8188:8188"
+    volumes:
+      - /e/ComfyUI_deps:/deps
+      - /e/ComfyUI_out/:/output
+      - /f/ComfyUI_in:/input
+      - /f/ComfyUI:/ComfyUI
+      - /f/ComfyUI_models:/models
+      - /root/.cache/huggingfacetest:/root/.cache/huggingfacetest
+      - /usr/lib/wsl:/usr/lib/wsl
+    devices:
+      - /dev/dxg
+      - /dev/dri
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+      - LD_LIBRARY_PATH=/oneapi-lib:/oneapi-lib/intel64:$LD_LIBRARY_PATH
+      - VENVDir=/deps/venv
+      - LD_PRELOAD=${ALLOCATOR_LD_PRELOAD}
+      - NEOReadDebugKeys=1
+      - ClDeviceGlobalMemSizeAvailablePercent=100
+      - SYCL_CACHE_PERSISTENT=1
+      - SYCL_PI_LEVEL_ZERO_SINGLE_THREAD_MODE=1
+      - OverrideDefaultFP64Settings=1
+      - IGC_EnableDPEmulation=1
+      - IPEX_XPU_ONEDNN_LAYOUT=1
+      - UseXPU=true
+      - UseIPEXRUN=true
+      - ComfyArgs=--normalvram --preview-method auto --listen --use-pytorch-cross-attention --output-directory /output --input-directory /input
+      #- ComfyArgs=--highvram --preview-method auto --listen --use-pytorch-cross-attention --output-directory /output --input-directory /input
+networks:
+  ai-front:
+    driver: bridge
