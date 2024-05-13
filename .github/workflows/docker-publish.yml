@@ -12,6 +12,7 @@ on:
 env:
   # Use docker.io for Docker Hub if empty
   # github.repository as <account>/<repo>
+  REGISTRY: docker.io
   IMAGE_NAME: "karmaterminal/comfyui_intel_arc_gpu"
 
 
