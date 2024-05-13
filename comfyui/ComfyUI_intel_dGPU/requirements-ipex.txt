@@ -1,0 +1,25 @@
+# intel ultra cpu
+# intel_extension_for_pytorch @ https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.1.10%2Bxpu/intel_extension_for_pytorch-2.1.10+xpu-cp310-cp310-win_amd64.whl
+# torchvision @ https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.1.10%2Bxpu/torchvision-0.16.0a0+cxx11.abi-cp310-cp310-win_amd64.whl
+# torch @ https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.1.10%2Bxpu/torch-2.1.0a0+cxx11.abi-cp310-cp310-win_amd64.whl
+
+# intel arc gpu
+#intel_extension_for_pytorch @ https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.0.110%2Bxpu-master%2Bdll-bundle/intel_extension_for_pytorch-2.0.110+gitc6ea20b-cp310-cp310-win_amd64.whl
+
+intel-extension-for-pytorch @ https://intel-extension-for-pytorch.s3.amazonaws.com/ipex_stable/xpu/intel_extension_for_pytorch-2.1.30%2Bxpu-cp311-cp311-linux_x86_64.whl
+torch @ https://intel-extension-for-pytorch.s3.amazonaws.com/ipex_stable/xpu/torch-2.1.0.post2%2Bcxx11.abi-cp311-cp311-linux_x86_64.whl
+torchvision @ https://intel-extension-for-pytorch.s3.amazonaws.com/ipex_stable/xpu/torchvision-0.16.0.post2%2Bcxx11.abi-cp311-cp311-linux_x86_64.whl
+torchaudio @ https://intel-extension-for-pytorch.s3.amazonaws.com/ipex_stable/xpu/torchaudio-2.1.0.post2%2Bcxx11.abi-cp311-cp311-linux_x86_64.whl
+torchsde
+einops
+transformers>=4.40.2
+safetensors>=0.3.0
+aiohttp
+pyyaml
+Pillow
+scipy
+tqdm
+psutil
+protobuf==4.25.3
+civitai_comfy_nodes
+kornia
