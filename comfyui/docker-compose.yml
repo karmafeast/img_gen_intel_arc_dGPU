@@ -49,8 +49,7 @@ services:
       - /usr/lib/wsl:/usr/lib/wsl # apparently required for device passing in wsl? tho the device in wsl ubuntu shows as /dev/dri, I'm passing both tho below.
     devices:
       - /dev/dxg # apparently required for device passing in wsl? tho the device in wsl ubuntu shows as /dev/dri.
-      - /dev/dri
-    tty: true
+      - /dev/dri # this is what linux itself want to see.
     env_file:
       - path: ./comfyui_launcher.env
         required: true
