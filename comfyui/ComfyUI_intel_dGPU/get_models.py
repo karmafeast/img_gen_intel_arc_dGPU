@@ -5,11 +5,11 @@
 import os
 from typing import Final
 
-COMFYUI_BASEDIR: Final[str] = "/ComfyUI"
-COMFYUI_VENV: Final[str] = "/deps/venv"
-MODELS_BASEDIR: Final[str] = "/models"
+COMFYUI_BASEDIR: Final[str] = f"{os.environ.get('PATH_COMFY_BASE')}"
+COMFYUI_VENV: Final[str] = f"{os.environ.get('PATH_COMFY_PY_DEPENDS')}/venv"
+MODELS_BASEDIR: Final[str] = f"{os.environ.get('PATH_COMFY_MODELS')}"
 
-WGET_ARGS: Final[str] = "-c --no-verbose --show-progress"
+WGET_ARGS: Final[str] = "-c --no-verbose --show-progress --progress=bar:force:noscroll"
 
 # SDXL
 print("__> Downloading models...")

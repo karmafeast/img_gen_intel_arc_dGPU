@@ -20,6 +20,6 @@ Pillow
 scipy
 tqdm
 psutil
-protobuf
+protobuf==4.25.3
 civitai_comfy_nodes
 kornia

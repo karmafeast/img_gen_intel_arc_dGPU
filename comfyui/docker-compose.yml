@@ -1,44 +1,64 @@
-version: '3.8'
+name: 'comfyui_intel_arc_gpu'
 services:
   comfyui_launcher:
+    restart: unless-stopped
     privileged: true
-    build: ./ComfyUI_intel_dGPU
-    image: comfyui-intel-arc:1.0
-    container_name: comfyui-intel-arc
-    networks:
-      - ai-front
-    ports:
-      - "8188:8188"
-    volumes:
-      - /e/ComfyUI_deps:/deps
-      - /e/ComfyUI_out/:/output
-      - /f/ComfyUI_in:/input
-      - /f/ComfyUI:/ComfyUI
-      - /f/ComfyUI_models:/models
-      - /root/.cache/huggingfacetest:/root/.cache/huggingfacetest
-      - /usr/lib/wsl:/usr/lib/wsl
-    devices:
-      - /dev/dxg
-      - /dev/dri
-    tty: true
-    environment:
-      - DEBIAN_FRONTEND=noninteractive
-      - LD_LIBRARY_PATH=/oneapi-lib:/oneapi-lib/intel64:$LD_LIBRARY_PATH
-      - VENVDir=/deps/venv
-      - INIT_TOUCH_FILE=/deps/touchme.comfyinit
-      - COMFYUI_MODELS_DOWNLOAD=1
-      - LD_PRELOAD=${ALLOCATOR_LD_PRELOAD}
+    build:
+     context: ./ComfyUI_intel_dGPU
+     dockerfile: Dockerfile
+     target: comfyui_launcher
+     args:
+      - PATH_COMFY_BASE=/ComfyUI
+      - PATH_COMFY_PY_DEPENDS=/ComfyUI_deps
+      - PATH_COMFY_INPUT=/ComfyUI_input
+      - PATH_COMFY_MODELS=/ComfyUI_models
+      - PATH_COMFY_OUTPUT=/ComfyUI_ouput
+      - PYTHON_VERSION=3.11.9
+      - PATH_INIT_TOUCH_FILE=/ComfyUI_deps/touchme.comfyinit
+      # don't download models yet, I need to find ones that aren't like 6mo old or more from links I got in some jupyter notebook. comfyui will download them itself, but itd be nice to get some to start...
+      - COMFYUI_MODELS_DOWNLOAD=0
+      # the memory allocation thing here dumps a ton of messages:
+      # ERROR: ld.so: object '/usr/lib/x86_64-linux-gnu/libtcmalloc.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+      #- ALLOCATOR_LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so
       - NEOReadDebugKeys=1
       - ClDeviceGlobalMemSizeAvailablePercent=100
       - SYCL_CACHE_PERSISTENT=1
-      - SYCL_PI_LEVEL_ZERO_SINGLE_THREAD_MODE=1
+      - SYCL_PI_LEVEL_ZERO_SINGLE_THREAD_MODE=0
       - OverrideDefaultFP64Settings=1
       - IGC_EnableDPEmulation=1
       - IPEX_XPU_ONEDNN_LAYOUT=1
       - UseXPU=true
       - UseIPEXRUN=true
-      - ComfyArgs=--normalvram --preview-method auto --listen --use-pytorch-cross-attention --output-directory /output --input-directory /input
-      #- ComfyArgs=--highvram --preview-method auto --listen --use-pytorch-cross-attention --output-directory /output --input-directory /input
+      - ComfyArgs=--normalvram --preview-method auto --listen --use-pytorch-cross-attention
+      - DPCPP_VER=2024.1.0-963
+      - MKL_VER=2024.1.0-691
+      - CMPLR_COMMON_VER=2024.1
+      - IPEXRUNArgs=""
+    image: comfyui-intel-arc:1.0
+    container_name: comfyui-intel-arc
+    networks:
+      - comfyui
+    ports:
+      - "8188:8188"
+    volumes:
+      - ComfyUI:/ComfyUI
+      - ComfyUI_deps:/ComfyUI_deps
+      - ComfyUI_input:/ComfyUI_input
+      - ComfyUI_models:/ComfyUI_models
+      - ComfyUI_output:/ComfyUI_ouput
+      - /usr/lib/wsl:/usr/lib/wsl # apparently required for device passing in wsl? tho the device in wsl ubuntu shows as /dev/dri, I'm passing both tho below.
+    devices:
+      - /dev/dxg # apparently required for device passing in wsl? tho the device in wsl ubuntu shows as /dev/dri.
+      - /dev/dri # this is what linux itself want to see.
+    env_file:
+      - path: ./comfyui_launcher.env
+        required: true
 networks:
-  ai-front:
+  comfyui:
     driver: bridge
+volumes:
+  ComfyUI_deps:
+  ComfyUI_output:
+  ComfyUI_input:
+  ComfyUI:
+  ComfyUI_models:
