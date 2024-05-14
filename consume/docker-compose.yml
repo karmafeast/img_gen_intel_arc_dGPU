@@ -1,0 +1,33 @@
+name: 'comfyui_intel_arc_gpu'
+services:
+  comfyui_launcher:
+    restart: unless-stopped
+    privileged: true
+    image: karmaterminal/comfyui_intel_arc_gpu:release
+    container_name: comfyui-intel-arc
+    networks:
+      - comfyui
+    ports:
+      - "8188:8188"
+    volumes:
+      - ComfyUI:/ComfyUI
+      - ComfyUI_deps:/ComfyUI_deps
+      - ComfyUI_input:/ComfyUI_input
+      - ComfyUI_models:/ComfyUI_models
+      - ComfyUI_output:/ComfyUI_ouput
+      - /usr/lib/wsl:/usr/lib/wsl # apparently required for device passing in wsl? tho the device in wsl ubuntu shows as /dev/dri, I'm passing both tho below.
+    devices:
+      - /dev/dxg # apparently required for device passing in wsl? tho the device in wsl ubuntu shows as /dev/dri.
+      - /dev/dri # this is what linux itself want to see.
+    env_file:
+      - path: ./comfyui_launcher.env
+        required: true
+networks:
+  comfyui:
+    driver: bridge
+volumes:
+  ComfyUI_deps:
+  ComfyUI_output:
+  ComfyUI_input:
+  ComfyUI:
+  ComfyUI_models:
