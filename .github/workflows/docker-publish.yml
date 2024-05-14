@@ -1,21 +1,19 @@
 name: Docker
 on:
   push:
-    branches: [ "release" ]
+    branches: ["release"]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: ["v*.*.*"]
   pull_request:
-    branches: [ "release" ]
+    branches: ["release"]
 
 env:
   REGISTRY: docker.io
   REGISTRY_USER: "karmaterminal"
   IMAGE_NAME: "comfyui_intel_arc_gpu"
 
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +26,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 #v3.1.1
         with:
-          cosign-release: 'v2.1.1'
+          cosign-release: "v2.1.1"
 
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache
@@ -62,10 +60,7 @@ jobs:
         with:
           context: ./comfyui/ComfyUI_intel_dGPU
           push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ env.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ env.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ github.ref == 'refs/tags/' && github.ref_name || 'latest' }}
+          tags: ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ github.ref == 'refs/tags/' && github.ref_name || 'latest' }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
