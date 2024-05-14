@@ -1,0 +1,5 @@
+pylint
+mypy
+tox
+ruff
+tox-gh
