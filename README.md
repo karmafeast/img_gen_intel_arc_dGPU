@@ -2,11 +2,11 @@
 
 ## links
 
-homepage = "<https://github.com/karmafeast/img_gen_intel_arc_dGPU>"
-docker-image = "<https://hub.docker.com/repository/docker/karmaterminal/comfyui_intel_arc_gpu/general>"
-documentation = "<https://github.com/karmafeast/img_gen_intel_arc_dGPU/blob/main/README.md>"
-repository = "<https://github.com/karmafeast/img_gen_intel_arc_dGPU>"
-issue-tracker = "<https://github.com/karmafeast/img_gen_intel_arc_dGPU/issues>"
+* homepage = <https://github.com/karmafeast/img_gen_intel_arc_dGPU>
+* docker-image = <https://hub.docker.com/repository/docker/karmaterminal/comfyui_intel_arc_gpu/general>
+* documentation = <https://github.com/karmafeast/img_gen_intel_arc_dGPU/blob/main/README.md>
+* repository = <https://github.com/karmafeast/img_gen_intel_arc_dGPU>
+* issue-tracker = <https://github.com/karmafeast/img_gen_intel_arc_dGPU/issues>
 
 rough, not nice yet. working on ARC A770m.
 
