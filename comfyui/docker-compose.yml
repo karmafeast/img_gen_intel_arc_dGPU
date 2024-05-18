@@ -15,11 +15,9 @@ services:
       - PATH_COMFY_OUTPUT=/ComfyUI_ouput
       - PYTHON_VERSION=3.11.9
       - PATH_INIT_TOUCH_FILE=/ComfyUI_deps/touchme.comfyinit
-      # don't download models yet, I need to find ones that aren't like 6mo old or more from links I got in some jupyter notebook. comfyui will download them itself, but itd be nice to get some to start...
+      # recommend not to download models yet, I need to find ones that aren't like 6mo old or more from links I got in some jupyter notebook.
+      # comfyui-manager will download them itself, but itd be nice to get some to start...
       - COMFYUI_MODELS_DOWNLOAD=0
-      # the memory allocation thing here dumps a ton of messages:
-      # ERROR: ld.so: object '/usr/lib/x86_64-linux-gnu/libtcmalloc.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
-      #- ALLOCATOR_LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so
       - NEOReadDebugKeys=1
       - ClDeviceGlobalMemSizeAvailablePercent=100
       - SYCL_CACHE_PERSISTENT=1
