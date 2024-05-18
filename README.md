@@ -37,7 +37,14 @@ docker compose up
 
 ## Notes on WSL2
 
-There are a few things I did to WSL2 to get this working nicely.
+I'd not run this as a persistent service in WSL2, getting it to startup with the machine, as opposed to user login and first launch (turning on WSL2 debugging helps see all this) would need
+to be emulated with a service wrapping the wsl commands.
+
+hyper-v isn't a good solution for gpu passing, it doesn't present an intel arc gpu to the VM, and there's no capability with intel arc gpus to virtualize / share a gpu between VMs.
+
+a different hypervisor, and pciex passthrough of the gpu device might work better, but I want to keep the top of this box on windows at the moment, and I hear proxmox USB passthrough is not good (I have a lot of USB devices).
+
+Regardless, there are a few things I did to WSL2 to get this working nicely.
 
 ### at the windows host level (in %userprofile%/.wslconfig)
 
@@ -120,6 +127,60 @@ My /etc/fstab looks like this - the easiest way to initially create the vhdx is 
 UUID=00000000-0000-0000-0000-000000000000 /f ext4 defaults 0 2
 UUID=11111111-1111-1111-1111-111111111111 /e ext4 defaults 0 2
 ```
+
+## ERRATA: setup for vhdx files
+
+### create vhd file
+
+(it's easiest to do this one off in disk management ui)
+
+```powershell
+New-VHD -Path "Y:\vhdx\some_meaningful_name_wsl2_z.vhdx" -SizeBytes 400GB -Dynamic -BlockSizeBytes 1MB
+wsl -d Ubuntu-24.04 --mount --vhd Y:\vhdx\elliott_wsl2_y.vhdx --bare
+```
+
+### get the UUID of the disks
+
+from within wsl2 distro you're using:
+
+```bash
+sudo lsblk
+
+# -------------
+# output will include /dev/sd* entries for the disks you mounted
+
+NAME  MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0   7:0    0 472.8M  1 loop /mnt/wsl/docker-desktop/cli-tools
+loop1   7:1    0 145.2M  1 loop
+loop2   7:2    0 411.1M  1 loop
+sda     8:0    0 388.5M  1 disk
+sdb     8:16   0     1T  0 disk /mnt/wsl/docker-desktop/docker-desktop-user-distro
+sdc     8:32   0     1T  0 disk /mnt/wsl/docker-desktop-data/isocache
+sdd     8:48   0     1T  0 disk /mnt/wslg/distro
+                                /
+sde     8:64   0   400G  0 disk /f
+sdf     8:80   0   400G  0 disk /e
+```
+
+```bash
+
+sudo blkid
+
+# -------------
+# output will incldude UUIDs for the disks you mounted, not the UUID of the disks
+# ...rest of output removed
+/dev/sdf: UUID="00000000-0000-0000-0000-000000000000" BLOCK_SIZE="4096" TYPE="ext4"
+/dev/sde: UUID="11111111-1111-1111-1111-111111111111" BLOCK_SIZE="4096" TYPE="ext4"
+```
+
+### format ext4 (assuming devices sde and sdf from prior output)
+
+```bash
+sudo mkfs.ext4 /dev/sde
+sudo mkfs.ext4 /dev/sdf
+```
+
+at this point you can use them in the startup script in /etc/wsl.conf, described above, without bother.
 
 ## quick todo
 
